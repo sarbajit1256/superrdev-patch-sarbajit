@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SearchBar from './components/SearchBar';
 import StatusFilter from './components/StatusFilter';
 import TaskTable from './components/TaskTable';
@@ -8,6 +8,13 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
+
+  // BUG 4 FIX:
+  // Reset to page 1 whenever search query or status changes
+
+  useEffect(() => {
+    setPage(1);
+  }, [query, status]);
 
   const { tasks, total, loading, error } = useTasks(query, status, page, 10);
 
@@ -32,10 +39,15 @@ export default function App() {
           <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
             Previous
           </button>
+
           <span>
             Page {page} of {totalPages}
           </span>
-          <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
+
+          <button
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
             Next
           </button>
         </div>
